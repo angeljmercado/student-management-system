@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QGridLayout, QLineEdit, QPushButton, QMainWindow, QTableWidget, QTableWidgetItem, QDialog, QVBoxLayout, QComboBox
+from PyQt6.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QGridLayout, QLineEdit, QPushButton, QMainWindow, QTableWidget, QTableWidgetItem, QDialog, QVBoxLayout, QComboBox, QToolBar
 import sys
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
 import sqlite3
 
@@ -8,12 +8,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Student Management System")
+        self.setMinimumSize(800, 600)
 
         file_menu = self.menuBar().addMenu("&File")
         help_menu = self.menuBar().addMenu("&Help")
         edit_menu = self.menuBar().addMenu("&Edit")
 
-        add_student_action = QAction("Add Student", self)
+        add_student_action = QAction(QIcon("icons/add.png"), "Add Student", self)
         add_student_action.triggered.connect(self.insert)
         file_menu.addAction(add_student_action)
 
@@ -21,7 +22,7 @@ class MainWindow(QMainWindow):
         help_menu.addAction(about_action)
         about_action.setMenuRole(QAction.MenuRole.NoRole)
 
-        search_action = QAction("Search", self)
+        search_action = QAction(QIcon("icons/search.png"), "Search", self)
         edit_menu.addAction(search_action)
         search_action.triggered.connect(self.search)
 
@@ -30,6 +31,14 @@ class MainWindow(QMainWindow):
         self.table.setHorizontalHeaderLabels(("Id", "Name", "Course", "Mobile"))
         self.table.verticalHeader().setVisible(False)
         self.setCentralWidget(self.table)
+
+        # Create toolbar and it's elements
+        toolbar = QToolBar()
+        toolbar.setMovable(True)
+        self.addToolBar(toolbar)
+        toolbar.addAction(add_student_action)
+        toolbar.addAction(search_action)
+
 
     def load_data(self):
         connection = sqlite3.connect("database.db")
@@ -40,7 +49,7 @@ class MainWindow(QMainWindow):
             for column_number, data in enumerate(row_data):
                 self.table.setItem (row_number, column_number, QTableWidgetItem(str(data)))
         connection.close()
-        self.table
+
     def insert(self):
         dialog = InsertDialog()
         dialog.exec()
@@ -48,6 +57,7 @@ class MainWindow(QMainWindow):
     def search(self):
         search_dialog = SearchDialog()
         search_dialog.exec()
+
 
 class InsertDialog(QDialog):
     def __init__(self):
@@ -109,7 +119,7 @@ class SearchDialog(QDialog):
         layout.addWidget(self.search_name)
 
         button = QPushButton("Search")
-        #button.clicked.connect("Still in the works######")
+        button.clicked.connect(self.search)
         layout.addWidget(button)
 
         self.setLayout(layout)
@@ -118,8 +128,7 @@ class SearchDialog(QDialog):
         name = self.search_name.text()
         connection = sqlite3.connect("database.db")
         cursor = connection.cursor()
-        result = cursor.execute("SELECT * FROM students WHERE name = ?", (name))
-        rows = list(result)
+        result = cursor.execute("SELECT * FROM students WHERE name = ?", (name,))
         items = main_window.table.findItems(name, Qt.MatchFlag.MatchFixedString)
         for item in items:
             #print(item)
