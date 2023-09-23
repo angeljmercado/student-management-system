@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
         about_action = QAction("About", self)
         help_menu.addAction(about_action)
         about_action.setMenuRole(QAction.MenuRole.NoRole)
+        about_action.triggered.connect(self.about)
 
         search_action = QAction(QIcon("icons/search.png"), "Search", self)
         edit_menu.addAction(search_action)
@@ -88,6 +89,18 @@ class MainWindow(QMainWindow):
     def delete(self):
         dialog = DeleteDialog()
         dialog.exec()
+    
+    def about(self):
+        dialog = AboutDialog()
+        dialog.exec()
+
+
+class AboutDialog(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("About")
+        message = """ Created as part of a project from the Python Mega Course. """
+        self.setText(message)
 
 
 class EditDialog(QDialog):
@@ -264,6 +277,7 @@ class SearchDialog(QDialog):
             main_window.table.item(item.row(), 1).setSelected(True)
         cursor.close()
         connection.close()
+
 
 app = QApplication(sys.argv)
 main_window = MainWindow()
