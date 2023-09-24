@@ -155,6 +155,13 @@ class EditDialog(QDialog):
         # Refreshing the table records
         main_window.load_data()
 
+        self.close()
+
+        confirmation_widget = QMessageBox()
+        confirmation_widget.setWindowTitle("Confirmation Message")
+        confirmation_widget.setText("The record has been updated.")
+        confirmation_widget.exec()
+
 
 class DeleteDialog(QDialog):
     def __init__(self):
@@ -197,7 +204,7 @@ class DeleteDialog(QDialog):
 
         confirmation_widget = QMessageBox()
         confirmation_widget.setWindowTitle("Success")
-        confirmation_widget.setText("The record has been deleted")
+        confirmation_widget.setText("The record has been deleted.")
         confirmation_widget.exec()
 
 
@@ -244,6 +251,13 @@ class InsertDialog(QDialog):
         cursor.close()
         connection.close()
         main_window.load_data()
+
+        self.close()
+
+        confirmation_widget = QMessageBox()
+        confirmation_widget.setWindowTitle("Confirmation Message")
+        confirmation_widget.setText("The record has been registered.")
+        confirmation_widget.exec()
 
 
 class SearchDialog(QDialog):
